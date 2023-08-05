@@ -19,6 +19,10 @@ interface OrderDoc extends mongoose.Document {
 
 interface OrderModel extends mongoose.Model<OrderDoc> {
   build(attrs: OrderAttrs): OrderDoc;
+  findByIdAndPreviousVersion(event: {
+    id: string;
+    version: number;
+  }): Promise<OrderDoc | null>;
 }
 
 const orderSchema = new mongoose.Schema(
@@ -57,6 +61,16 @@ orderSchema.statics.build = (attrs: OrderAttrs) => {
     price: attrs.price,
     userId: attrs.userId,
     status: attrs.status,
+  });
+};
+
+orderSchema.statics.findByIdAndPreviousVersion = (event: {
+  id: string;
+  version: number;
+}) => {
+  return Order.findOne({
+    _id: event.id,
+    version: event.version - 1,
   });
 };
 
