@@ -3,7 +3,7 @@ import mongoose from 'mongoose';
 import jwt from 'jsonwebtoken';
 
 declare global {
-  var getAuthCookie: () => string[];
+  var getAuthCookie: (userId?: string) => string[];
 }
 
 let mongo: any;
@@ -34,10 +34,10 @@ afterAll(async () => {
   await mongoose.connection.close();
 });
 
-global.getAuthCookie = () => {
+global.getAuthCookie = (id?: string) => {
   // Build a JWT payload. { id, email }
   const payload = {
-    id: new mongoose.Types.ObjectId().toHexString(),
+    id: id || new mongoose.Types.ObjectId().toHexString(),
     email: 'test@test.com',
   };
 
